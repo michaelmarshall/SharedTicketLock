@@ -21,16 +21,12 @@ class SharedTicketLock {
 public:
     void writer_lock(){
         uint16_t my_ticket = next_ticket.fetch_add(2);
-        while (now_serving.load() != my_ticket || now_serving.load() != served.load()){
-            std::this_thread::yield();
-        }
+        while (now_serving.load() != my_ticket || now_serving.load() != served.load()){}
     }
 
     void reader_lock(){
         uint16_t my_ticket = next_ticket.fetch_add(1);
-        while (now_serving.load() != my_ticket){
-            std::this_thread::yield();
-        }
+        while (now_serving.load() != my_ticket){}
         now_serving.fetch_add(1);
     }
 
